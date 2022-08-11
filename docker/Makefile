@@ -11,6 +11,13 @@ docker_orbital_cannon: ## Deletes ALL docker images and containers.
 	docker rmi --force $$(docker images -q) || true
 	docker volume rm $$(docker volume ls -q) || true
 
-.PHONY:remove_dangling_images
-remove_dangling_images:
-	docker rmi --force $$(docker images -f 'dangling=true' -q)
+.PHONY: clean_docker
+clean_docker: delete_dangling_images delete_all_build_cache
+
+.PHONY:delete_dangling_images
+delete_dangling_images:
+	docker rmi --force $$(docker images -f 'dangling=true' -q) 2> /dev/null || true
+	docker image prune --force --filter="dangling=true" 2> /dev/null || true
+
+.PHONY: delete_all_build_cache
+	docker builder prune --force --all
