@@ -16,7 +16,7 @@ clean_docker: delete_dangling_images delete_all_build_cache
 
 .PHONY:delete_all_none_tags
 delete_all_none_tags:
-	docker rmi $$(docker images -f "dangling=true" -q) --force
+	docker rmi $$(docker images -f "dangling=true" -q) --force 2> /dev/null || true
 
 .PHONY:delete_dangling_images
 delete_dangling_images:
