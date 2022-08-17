@@ -24,4 +24,5 @@ delete_dangling_images:
 	docker image prune --force --filter="dangling=true" 2> /dev/null || true
 
 .PHONY: delete_all_build_cache
+delete_all_build_cache:
 	docker builder prune --force --all
