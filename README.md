@@ -3,10 +3,15 @@ This is a collection of utility make targets that can be imported to any makefil
 
 ## Usage 
 
-Add the following import statement to the top of you make file"
+Add the following import statement to the top of you make file:
 ```make
 include make_gadgets/Makefile
 ```
+or
+```make
+include make_gadgets/docker/Makefile
+```
+for the docker related gadgets/targets
 
 ### help target
 When imported this project provides a 'help' target. Any target preceded by '##' 
