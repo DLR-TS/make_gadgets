@@ -1,5 +1,11 @@
 
+ROOT_DIR:=$(shell dirname "$(realpath $(firstword $(MAKEFILE_LIST)))")
 
+.EXPORT_ALL_VARIABLES:
+DOCKER_IMAGE_SEARCH_PATH?="${HOME}"
+DOCKER_IMAGE_SEARCH_PATH?="../../"
+DOCKER_IMAGE_CACHE_DIRECTORY?=".docker_image_cache"
+DEBUG=true
 
 .PHONY:docker_orbital_cannon
 docker_orbital_cannon: ## Deletes ALL docker images, volumes, build cache and containers.
@@ -38,3 +44,15 @@ docker_group_check:# Checks if the current user is a member of the 'docker' grou
          echo "    Run 'sudo usermod -a -G docker \$$USER' to add the current user to the docker group and try again."; 1>&2 \
          echo "    You may need to log out and log back in for changes to take effect." 1>&2 && exit 1 \
     )
+
+.PHONY: docker_save
+docker_save: docker_group_check
+	bash "${ROOT_DIR}/tools/docker_save.sh" --search-path "${DOCKER_IMAGE_SEARCH_PATH}" --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}"
+
+.PHONY: docker_load
+docker_load: docker_group_check
+	bash "${ROOT_DIR}/tools/docker_save.sh" --search-path "${DOCKER_IMAGE_SEARCH_PATH}" --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}"
+
+.PHONY: clean_docker_cache
+clean_docker_cache:
+	rm -rf "${DOCKER_IMAGE_CACHE_DIRECTORY}"
