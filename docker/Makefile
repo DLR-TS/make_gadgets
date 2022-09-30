@@ -1,21 +1,21 @@
 
 ROOT_DIR:=$(shell dirname "$(realpath $(firstword $(MAKEFILE_LIST)))")
+MAKEFILE_DIR := $(shell dirname "$(abspath "$(lastword $(MAKEFILE_LIST))")")
 
 .EXPORT_ALL_VARIABLES:
 DOCKER_IMAGE_SEARCH_PATH?="${HOME}"
-DOCKER_IMAGE_SEARCH_PATH?="../../"
-DOCKER_IMAGE_CACHE_DIRECTORY?=".docker_image_cache"
-DEBUG=true
+DOCKER_IMAGE_CACHE_DIRECTORY?="${MAKEFILE_DIR}/.docker_image_cache"
+#DEBUG=true
 
 .PHONY:docker_orbital_cannon
 docker_orbital_cannon: ## Deletes ALL docker images, volumes, build cache and containers.
 	@echo -n "This is very destructive and will result in PERMANENT data loss, are you sure you want to proceed? [y/N] " && read ans && [ $${ans:-N} = y ];
 	docker stop $$(docker ps -aq) || true
-	docker builder prune --all --force
-	docker system prune --all --volumes --force
 	docker rm --force $$(docker ps -aq) || true
 	docker rmi --force $$(docker images -q) || true
 	docker volume rm $$(docker volume ls -q) || true
+	docker builder prune --all --force || true
+	docker system prune --all --volumes --force || true
 
 .PHONY: clean_docker ## Clean/delete add docker dangling images and build cache
 clean_docker: delete_dangling_images delete_all_build_cache
@@ -46,13 +46,23 @@ docker_group_check:# Checks if the current user is a member of the 'docker' grou
     )
 
 .PHONY: docker_save
-docker_save: docker_group_check
-	bash "${ROOT_DIR}/tools/docker_save.sh" --search-path "${DOCKER_IMAGE_SEARCH_PATH}" --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}"
+docker_fetch: docker_group_check## Fetches from docker.io all docker images provided by DOCKER_IMAGE_SEARCH_PATH or docker image ls to a local cache
+	bash "docker_image_cacher.sh" --docker-image-search-path "${DOCKER_IMAGE_SEARCH_PATH}" --fetch
+
+.PHONY: docker_save
+docker_save: docker_group_check ## Saves all docker images provided by DOCKER_IMAGE_SEARCH_PATH or docker image ls to a local cache
+	bash "docker_image_cacher.sh" --docker-image-search-path "${DOCKER_IMAGE_SEARCH_PATH}" \
+		                          --save
 
 .PHONY: docker_load
-docker_load: docker_group_check
-	bash "${ROOT_DIR}/tools/docker_save.sh" --search-path "${DOCKER_IMAGE_SEARCH_PATH}" --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}"
+docker_load: docker_group_check ## Loads docker image archives, in the docker image cache, into docker
+	bash "docker_image_cacher.sh" --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}" \
+                                  --load
 
-.PHONY: clean_docker_cache
-clean_docker_cache:
+.PHONY: clean_docker_image_cache
+clean_docker_image_cache: ## Delete/clear local docker image cache
 	rm -rf "${DOCKER_IMAGE_CACHE_DIRECTORY}"
+
+.PHONY: get_docker_image_cache_size
+get_docker_image_cache_size:
+	@du -h "$(shell realpath "${DOCKER_IMAGE_CACHE_DIRECTORY}")" 2>/dev/null || echo 0
