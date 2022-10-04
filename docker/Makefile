@@ -47,16 +47,22 @@ docker_group_check:# Checks if the current user is a member of the 'docker' grou
 
 .PHONY: docker_save
 docker_fetch: docker_group_check## Fetches from docker.io all docker images provided by DOCKER_IMAGE_SEARCH_PATH or docker image ls to a local cache
-	bash "docker_image_cacher.sh" --docker-image-search-path "${DOCKER_IMAGE_SEARCH_PATH}" --fetch
+	cd "${MAKEFILE_DIR}" && \
+    bash "docker_image_cacher.sh" --docker-image-search-path "${DOCKER_IMAGE_SEARCH_PATH}" \
+	                              --fetch
 
 .PHONY: docker_save
 docker_save: docker_group_check ## Saves all docker images provided by DOCKER_IMAGE_SEARCH_PATH or docker image ls to a local cache
-	bash "docker_image_cacher.sh" --docker-image-search-path "${DOCKER_IMAGE_SEARCH_PATH}" \
+	cd "${MAKEFILE_DIR}" && \
+    bash "docker_image_cacher.sh" --docker-image-search-path "${DOCKER_IMAGE_SEARCH_PATH}" \
+                                  --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}" \
 		                          --save
 
 .PHONY: docker_load
 docker_load: docker_group_check ## Loads docker image archives, in the docker image cache, into docker
-	bash "docker_image_cacher.sh" --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}" \
+	cd "${MAKEFILE_DIR}" && \
+    bash "docker_image_cacher.sh" --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}" \
+                                  --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}" \
                                   --load
 
 .PHONY: clean_docker_image_cache
@@ -64,5 +70,5 @@ clean_docker_image_cache: ## Delete/clear local docker image cache
 	rm -rf "${DOCKER_IMAGE_CACHE_DIRECTORY}"
 
 .PHONY: get_docker_image_cache_size
-get_docker_image_cache_size:
+get_docker_image_cache_size: ## Returns the docker image cache size on disk
 	@du -h "$(shell realpath "${DOCKER_IMAGE_CACHE_DIRECTORY}")" 2>/dev/null || echo 0

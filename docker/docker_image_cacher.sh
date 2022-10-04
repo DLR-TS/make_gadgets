@@ -1,13 +1,23 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
+#set -euxo pipefail
 
-function echoerr { echo "$@" >&2; exit 1;}
-function echodebug { [ ! -z $DEBUG ] && echo "$@" >&2;}
+function echoerr { printf "$@" >&2; exit 1;}
+echodebug (){ 
+    if [ ! -z ${DEBUG+x} ] && [ "${DEBUG}" -eq true ]; then 
+        printf "$@\n" >&2;
+    fi
+}
 
 SCRIPT_DIRECTORY="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 DOCKER_IMAGE_CACHE_DIRECTORY="$(realpath "${SCRIPT_DIRECTORY}/.docker_image_cache")"
+SAVE=false
+LOAD=false
+FETCH=false
+
+
 
 POSITIONAL_ARGS=()
 
@@ -113,7 +123,7 @@ function save_docker_images(){
     fi
     docker_image_cache_directory="$(realpath "${docker_image_cache_directory}")" 
     mkdir -p "${docker_image_cache_directory}"
-
+    
     cd "${docker_image_cache_directory}"
 
     for docker_image in $docker_images; do
@@ -150,15 +160,15 @@ function load_docker_images(){
 
 docker_images="$(find_docker_base_images "${DOCKER_IMAGE_SEARCH_PATH}")"
 
-if [[ ! -z $FETCH ]]; then
+if [[ "${FETCH}" == true ]]; then
     fetch_docker_images "${docker_images}" 
 fi
 
-if [[ ! -z $SAVE ]]; then
+if [[ "${SAVE}" == true ]]; then
     save_docker_images "${DOCKER_IMAGE_CACHE_DIRECTORY}"
 fi
 
-if [[ ! -z $LOAD ]]; then
+if [[ "${LOAD}" == true ]]; then
     load_docker_images "${DOCKER_IMAGE_CACHE_DIRECTORY}"
 fi
 
