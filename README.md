@@ -33,3 +33,8 @@ yields the following output:
 Usage: make <target>
   hello_world  This target prints "Hello, World!"
 ```
+
+### Docker targets
+This project also contains a Makefile with targets useful for Docker.
+For more information check out the provided readme:[docker/README.md](docker/README.md)
+

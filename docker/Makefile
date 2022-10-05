@@ -45,7 +45,7 @@ docker_group_check:# Checks if the current user is a member of the 'docker' grou
          echo "    You may need to log out and log back in for changes to take effect." 1>&2 && exit 1 \
     )
 
-.PHONY: docker_save
+.PHONY: docker_fetch
 docker_fetch: docker_group_check## Fetches from docker.io all docker images provided by DOCKER_IMAGE_SEARCH_PATH or docker image ls to a local cache
 	cd "${MAKEFILE_DIR}" && \
     bash "docker_image_cacher.sh" --docker-image-search-path "${DOCKER_IMAGE_SEARCH_PATH}" \
@@ -64,6 +64,11 @@ docker_load: docker_group_check ## Loads docker image archives, in the docker im
     bash "docker_image_cacher.sh" --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}" \
                                   --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}" \
                                   --load
+
+docker_conditional_load: docker_group_check ## Loads docker image archives, in the docker image cache only if it is empty
+	cd "${MAKEFILE_DIR}" && \
+    bash "docker_image_cacher.sh" --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}" \
+                                  --conditional-load
 
 .PHONY: clean_docker_image_cache
 clean_docker_image_cache: ## Delete/clear local docker image cache
