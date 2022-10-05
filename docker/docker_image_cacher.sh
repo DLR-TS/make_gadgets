@@ -260,7 +260,7 @@ if [[ "${LOAD}" == true ]]; then
     load_docker_images "${DOCKER_IMAGE_CACHE_DIRECTORY}"
 fi
 
-docker_image_count="$(docker image ls | grep -v "REPOSITORY" | wc -l || echo 0)"
+docker_image_count="$(docker image ls | grep -v "REPOSITORY" | wc -l)" || true
 
 if [ "${docker_image_count}" == "0" -a "${CONDITIONAL_LOAD}" == true ]; then
     printf "Loading docker images from docker image cache: %s\n" "${DOCKER_IMAGE_CACHE_DIRECTORY}"
