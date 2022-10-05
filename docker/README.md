@@ -9,7 +9,7 @@ This directory contains a Makefile that enhance vanilla docker with make.
 The Makefile provided in this directory contains a wrapper for the docker_image_cacher.sh
 also included in this project making it easier to use this tool.
 
-To consume this make file you can directly import it to your Makefile such as follows: 
+To consume this Makefile you can directly import it to your Makefile such as follows: 
 ```make
 include make_gadgets/docker/Makefile
 ```
