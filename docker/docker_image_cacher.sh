@@ -195,12 +195,14 @@ fetch_docker_images(){
 save_docker_images(){
 
     local docker_image_cache_directory="${1}"
+    local docker_images="${2}"
  
     echodebug "  FROM save_docker_images:"
 
     if [[ -z "${docker_image_cache_directory}" ]]; then
         echoerr "ERROR: The docker image cache directory is not set."
     fi
+
     docker_image_cache_directory="$(realpath "${docker_image_cache_directory}")" 
     mkdir -p "${docker_image_cache_directory}"
     
@@ -237,7 +239,7 @@ load_docker_images(){
     fi
 }
 
-if [ "${FETCH}" == true -o "${PRINT}" == true ]; then
+if [ "${FETCH}" == true -o "${PRINT}" == true -o "${SAVE}" == true ]; then
     docker_images="$(find_docker_base_images "${DOCKER_IMAGE_SEARCH_PATH}")"
 fi
 
@@ -251,7 +253,7 @@ if [[ "${FETCH}" == true ]]; then
 fi
 
 if [[ "${SAVE}" == true ]]; then
-    save_docker_images "${DOCKER_IMAGE_CACHE_DIRECTORY}"
+    save_docker_images "${DOCKER_IMAGE_CACHE_DIRECTORY}" "${docker_images}"
 fi
 
 if [[ "${LOAD}" == true ]]; then
