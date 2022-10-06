@@ -17,6 +17,7 @@ DOCKER_IMAGE_CACHE_DIRECTORY="$(realpath "${SCRIPT_DIRECTORY}/.docker_image_cach
 DOCKER_IMAGE_SEARCH_PATH=""
 
 DOCKER_IMAGE_EXCLUSION_LIST=""
+DOCKER_IMAGE_INCLUSION_LIST=""
 
 SAVE=false
 LOAD=false
@@ -48,15 +49,20 @@ help (){
     printf "                                                  then the local docker registry is scraped. Discovered \n"
     printf "                                                  images are used for fetching and caching. \n\n"
 
+    printf "           -i, --docker-image-inclusion-list [inclusion list] \n"
+    printf "                                                  The docker image exclusion list is a space separated list \n"
+    printf "                                                  of docker images to include in fetching and caching. \n"
+    printf "                                                  example: 'ubuntu:latest debian:latest' \n\n"
+
     printf "           -x, --docker-image-exclusion-list [exclusion list] \n"
-    printf "                                                  The docker image exclusion list is a space sperated list \n"
-    printf "                                                  of docker images to exclude from fetching and caching. \n"
-    printf "                                                  example: 'ubuntu:latest debian:latest'"
+    printf "                                                  The docker image inclusion list is a space separated list \n"
+    printf "                                                  of docker images to be excluded from fetching and caching. \n"
+    printf "                                                  example: 'ubuntu:latest debian:latest' \n\n"
 
     printf "           -d, --docker-image-search-path [directory] \n"
     printf "                                                  This flag provides a search path to discover docker \n"
     printf "                                                  images.  This path will be recursively scraped for \n"
-    printf "                                                  Dockerfiles containing 'from <repository>:<tag>'. If no\n"
+    printf "                                                  Dockerfiles containing 'from <repository>:<tag>'. If no \n"
     printf "                                                  docker image search path is provide then docker images \n"
     printf "                                                  are pulled from the local registry. \n\n"
 
@@ -67,7 +73,7 @@ help (){
     printf "                                                  one will be created adjacent to this script with the name \n"
     printf "                                                  '%s'. \n" "$(basename ${DOCKER_IMAGE_CACHE_DIRECTORY})"
     printf "                                                  If a cache directory is provided with -c then it will be \n"
-    printf "                                                  created including all parent directives using mkdir -p\n\n"
+    printf "                                                  created including all parent directives using mkdir -p \n\n"
 
     printf "           -f, --fetch                            \n"
     printf "                                                  If this flag is provided the list of discovered docker \n"
@@ -76,11 +82,11 @@ help (){
 
     printf "           -s, --save                             Save all discovered docker images to the docker image \n"
     printf "                                                  cache directory as tar archive. Docker images must \n"
-    printf "                                                  already be available in the local registry to be saved\n\n"
+    printf "                                                  already be available in the local registry to be saved \n\n"
 
     printf "           -l, --load                             Load all images in the docker image cache directory from \n"
     printf "                                                  their respective tar archives into the local docker \n"
-    printf "                                                  registry\n\n"
+    printf "                                                  registry \n\n"
 
     printf "           -c, --conditional-load                 Same as load however if there is already any docker \n"
     printf "                                                  images in the local registry then this is a NOOP. \n\n"
@@ -125,6 +131,10 @@ while [[ $# -gt 0 ]]; do
       DOCKER_IMAGE_EXCLUSION_LIST="$2"
       shift # past argument
       ;;
+    -i|--docker-image-inclusion-list)
+      DOCKER_IMAGE_INCLUSION_LIST="$2"
+      shift # past argument
+      ;;
     -h|--help)
       help
       exit 0
@@ -158,9 +168,11 @@ find_docker_base_images(){
     #search_path is a directory containing Dockerfiles 
     local search_path="${1}"
     local docker_image_exclusion_list="${2}"
+    local docker_image_inclusion_list="${3}"
     local docker_images=""
 
-    docker_image_exclusion_list="$(echo "${DOCKER_IMAGE_EXCLUSION_LIST}" | tr ' ' '\n')"
+    docker_image_exclusion_list="$(echo "${docker_image_exclusion_list}" | tr ' ' '\n')"
+    docker_image_inclusion_list="$(echo "${docker_image_inclusion_list}" | tr ' ' '\n')"
 
     echodebug "  FROM find_docker_base_images:" 
 
@@ -186,7 +198,7 @@ find_docker_base_images(){
         done
     fi
     
-    docker_images="$(echo -e "${docker_images}" | sed '/^$/d' | grep ":" | grep -v "<none>:<none>" | sort | uniq)"
+    docker_images="$(echo -e "${docker_images}\n${docker_image_inclusion_list}" | sed '/^$/d' | grep ":" | grep -v "<none>:<none>" | sort | uniq)"
     #docker_images="$(printf "%s" "${docker_images}" | sed '/^$/d' | sort | uniq)"
     echodebug "    docker_images: ${docker_images}"
     echodebug "    docker_images count: $(echo "${docker_images}" | wc -L)"
@@ -254,7 +266,7 @@ load_docker_images(){
 }
 
 if [ "${FETCH}" == true -o "${PRINT}" == true -o "${SAVE}" == true ]; then
-    docker_images="$(find_docker_base_images "${DOCKER_IMAGE_SEARCH_PATH}" "${DOCKER_IMAGE_EXCLUSION_LIST}")"
+    docker_images="$(find_docker_base_images "${DOCKER_IMAGE_SEARCH_PATH}" "${DOCKER_IMAGE_EXCLUSION_LIST}" "${DOCKER_IMAGE_INCLUSION_LIST}")"
 fi
 
 if [ "${PRINT}" == true ]; then
