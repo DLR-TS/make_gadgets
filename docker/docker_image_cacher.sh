@@ -16,6 +16,8 @@ DOCKER_IMAGE_CACHE_DIRECTORY="$(realpath "${SCRIPT_DIRECTORY}/.docker_image_cach
 #DOCKER_IMAGE_SEARCH_PATH="${HOME}"
 DOCKER_IMAGE_SEARCH_PATH=""
 
+DOCKER_IMAGE_EXCLUSION_LIST=""
+
 SAVE=false
 LOAD=false
 CONDITIONAL_LOAD=false
@@ -46,14 +48,19 @@ help (){
     printf "                                                  then the local docker registry is scraped. Discovered \n"
     printf "                                                  images are used for fetching and caching. \n\n"
 
-    printf "           -d, --docker-image-search-path         \n"
+    printf "           -x, --docker-image-exclusion-list [exclusion list] \n"
+    printf "                                                  The docker image exclusion list is a space sperated list \n"
+    printf "                                                  of docker images to exclude from fetching and caching. \n"
+    printf "                                                  example: 'ubuntu:latest debian:latest'"
+
+    printf "           -d, --docker-image-search-path [directory] \n"
     printf "                                                  This flag provides a search path to discover docker \n"
     printf "                                                  images.  This path will be recursively scraped for \n"
     printf "                                                  Dockerfiles containing 'from <repository>:<tag>'. If no\n"
     printf "                                                  docker image search path is provide then docker images \n"
     printf "                                                  are pulled from the local registry. \n\n"
 
-    printf "           -c, -docker-image-cache-directory      \n"
+    printf "           -c, --docker-image-cache-directory [directory]"
     printf "                                                  The docker image cache directory is were image archives \n" 
     printf "                                                  are saved to and loaded from by this tool. \n"
     printf "                                                  If no docker image cache directory is provided then one \n"
@@ -114,6 +121,10 @@ while [[ $# -gt 0 ]]; do
       PRINT=true
       shift # past argument
       ;;
+    -x|--docker-image-exclusion-list)
+      DOCKER_IMAGE_EXCLUSION_LIST="$2"
+      shift # past argument
+      ;;
     -h|--help)
       help
       exit 0
@@ -146,8 +157,10 @@ find_docker_base_images(){
 
     #search_path is a directory containing Dockerfiles 
     local search_path="${1}"
+    local docker_image_exclusion_list="${2}"
     local docker_images=""
 
+    docker_image_exclusion_list="$(echo "${DOCKER_IMAGE_EXCLUSION_LIST}" | tr ' ' '\n')"
 
     echodebug "  FROM find_docker_base_images:" 
 
@@ -177,6 +190,7 @@ find_docker_base_images(){
     #docker_images="$(printf "%s" "${docker_images}" | sed '/^$/d' | sort | uniq)"
     echodebug "    docker_images: ${docker_images}"
     echodebug "    docker_images count: $(echo "${docker_images}" | wc -L)"
+    docker_images="$(comm -23 <(echo "${docker_images}" | sort) <(echo "${docker_image_exclusion_list}" | sort))"
     echo "${docker_images}"
 }
 
@@ -240,7 +254,7 @@ load_docker_images(){
 }
 
 if [ "${FETCH}" == true -o "${PRINT}" == true -o "${SAVE}" == true ]; then
-    docker_images="$(find_docker_base_images "${DOCKER_IMAGE_SEARCH_PATH}")"
+    docker_images="$(find_docker_base_images "${DOCKER_IMAGE_SEARCH_PATH}" "${DOCKER_IMAGE_EXCLUSION_LIST}")"
 fi
 
 if [ "${PRINT}" == true ]; then

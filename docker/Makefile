@@ -5,6 +5,7 @@ MAKEFILE_DIR := $(shell dirname "$(abspath "$(lastword $(MAKEFILE_LIST))")")
 .EXPORT_ALL_VARIABLES:
 DOCKER_IMAGE_SEARCH_PATH?="${HOME}"
 DOCKER_IMAGE_CACHE_DIRECTORY?="${MAKEFILE_DIR}/.docker_image_cache"
+DOCKER_IMAGE_EXCLUSION_LIST?=""
 #DEBUG=true
 
 .PHONY:docker_orbital_cannon
@@ -48,27 +49,28 @@ docker_group_check:# Checks if the current user is a member of the 'docker' grou
 .PHONY: docker_fetch
 docker_fetch: docker_group_check## Fetches from docker.io all docker images provided by DOCKER_IMAGE_SEARCH_PATH or docker image ls to a local cache
 	cd "${MAKEFILE_DIR}" && \
-    bash "docker_image_cacher.sh" --docker-image-search-path "${DOCKER_IMAGE_SEARCH_PATH}" \
-	                              --fetch
+    bash docker_image_cacher.sh --docker-image-search-path "${DOCKER_IMAGE_SEARCH_PATH}" \
+                                --docker-image-exclusion-list "${DOCKER_IMAGE_EXCLUSION_LIST}" \
+	                            --fetch
 
 .PHONY: docker_save
 docker_save: docker_group_check ## Saves all docker images provided by DOCKER_IMAGE_SEARCH_PATH or docker image ls to a local cache
 	cd "${MAKEFILE_DIR}" && \
-    bash "docker_image_cacher.sh" --docker-image-search-path "${DOCKER_IMAGE_SEARCH_PATH}" \
-                                  --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}" \
-		                          --save
+    bash docker_image_cacher.sh --docker-image-search-path "${DOCKER_IMAGE_SEARCH_PATH}" \
+                                --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}" \
+                                --docker-image-exclusion-list "${DOCKER_IMAGE_EXCLUSION_LIST}" \
+		                        --save
 
 .PHONY: docker_load
 docker_load: docker_group_check ## Loads docker image archives, in the docker image cache, into docker
 	cd "${MAKEFILE_DIR}" && \
-    bash "docker_image_cacher.sh" --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}" \
-                                  --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}" \
-                                  --load
+    bash docker_image_cacher.sh --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}" \
+                                --load
 
 docker_conditional_load: docker_group_check ## Loads docker image archives, in the docker image cache only if it is empty
 	cd "${MAKEFILE_DIR}" && \
-    bash "docker_image_cacher.sh" --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}" \
-                                  --conditional-load
+    bash docker_image_cacher.sh --docker-image-cache-directory "${DOCKER_IMAGE_CACHE_DIRECTORY}" \
+                                --conditional-load
 
 .PHONY: clean_docker_image_cache
 clean_docker_image_cache: ## Delete/clear local docker image cache

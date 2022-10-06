@@ -3,7 +3,7 @@ This is a collection of utility make targets that can be imported to any makefil
 
 ## Usage 
 
-Add the following import statement to the top of you make file:
+Add the following import statement to the top of your Makefile:
 ```make
 include make_gadgets/Makefile
 ```
