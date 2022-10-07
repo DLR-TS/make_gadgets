@@ -33,7 +33,7 @@ help (){
     printf "  Usage: bash docker-image-cacher.sh [OPTIONS]\n\n"
 
     printf "         Scrape your home directory for docker images, fetch them, and save them:\n"
-    printf "             bash docker-image-cacher.sh --fetch --save \n\n"
+    printf "             bash docker-image-cacher.sh -docker-image-search-path \"\${HOME}\" --fetch --save \n\n"
 
     printf "         Save all docker images in the local registry to the default cache location:\n"
     printf "             bash docker-image-cacher.sh --save"
