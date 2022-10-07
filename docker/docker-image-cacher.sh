@@ -33,13 +33,20 @@ help (){
     printf "  Usage: bash docker-image-cacher.sh [OPTIONS]\n\n"
 
     printf "         Scrape your home directory for docker images, fetch them, and save them:\n"
-    printf "             bash docker-image-cacher.sh --fetch --save -docker-image-search-path \$HOME\n\n"
+    printf "             bash docker-image-cacher.sh --fetch --save \n\n"
 
     printf "         Save all docker images in the local registry to the default cache location:\n"
     printf "             bash docker-image-cacher.sh --save"
 
     printf "         Load docker images from the default cache location into the local registry: \n"
     printf "             bash docker-image-cacher.sh --load \n\n"
+    
+    printf "         Fetch and save the docker image 'ubuntu:latest': \n"
+    printf "             bash docker-image-cacher.sh --save --fetch -i 'ubuntu:latest' \n\n"
+
+    printf "         Fetch and save the docker image 'ubuntu:latest' and 'alpine:latest': \n"
+    printf "             bash docker-image-cacher.sh --save --fetch -i 'ubuntu:latest alpine:latest' \n\n"
+
 
     printf "  Description: This tool can be used to discover, fetch, cache, and load docker images in your local \n"
     printf "               registry with the goal of saving bandwidth. Docker images are saved and loaded from tar archives \n\n"
@@ -57,19 +64,16 @@ help (){
     printf "                                                  of docker images to be excluded from fetching and caching. \n"
     printf "                                                  example: 'ubuntu:latest debian:latest' \n\n"
 
-    printf "           -d, --docker-image-search-path [directory] OPTIONAL\n"
+    printf "           -d, --docker-image-search-path [directory] OPTIONAL - DEFAULT: '\$HOME' --> ${HOME}\n"
     printf "                                                  This flag provides a search path to discover docker \n"
     printf "                                                  images.  This path will be recursively scraped for \n"
     printf "                                                  Dockerfiles containing 'from <repository>:<tag>'. If no \n"
     printf "                                                  docker image search path is provide then docker images \n"
     printf "                                                  are pulled from the local registry via 'docker image ls'. \n\n"
 
-    printf "           -c, --docker-image-cache-directory [directory] OPTIONAL\n"
+    printf "           -c, --docker-image-cache-directory [directory] OPTIONAL - DEFAULT: '${DOCKER_IMAGE_CACHE_DIRECTORY}'\n"
     printf "                                                  The docker image cache directory is were image archives \n" 
     printf "                                                  are saved to and loaded from by this tool. \n"
-    printf "                                                  If no docker image cache directory is provided then one \n"
-    printf "                                                  one will be created adjacent to this script with the name \n"
-    printf "                                                  '%s'. \n" "$(basename ${DOCKER_IMAGE_CACHE_DIRECTORY})"
     printf "                                                  If a cache directory is provided with -c then it will be \n"
     printf "                                                  created including all parent directives using mkdir -p \n\n"
 
@@ -249,6 +253,9 @@ save_docker_images(){
     
     cd "${docker_image_cache_directory}"
 
+     if [[ -z "${docker_images}" ]]; then
+         echoerr "ERROR: The docker image list is empty, there is nothing to save. Provide a search path with -d or inclusion list with -i\n"
+     fi
     for docker_image in $docker_images; do
         docker_image_archive="${docker_image_cache_directory}/$(echo "${docker_image//:/_}" | sed "s|/|_|g").tar"
         echo "    saving docker image: ${docker_image} to ${docker_image_archive}"

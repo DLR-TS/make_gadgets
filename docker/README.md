@@ -6,8 +6,8 @@ imported to extend your makefile or called directly.
 ## Docker tools Makefile
 This directory contains a Makefile that enhance vanilla docker with make.
 
-The Makefile provided in this directory contains a wrapper for the docker-image-cacher.sh
-also included in this project making it easier to use this tool.
+The Makefile also provides several practical targets that wrap the functionality of the docker-image-cacher.sh tool
+provided in this project.
 
 To consume this Makefile you can directly import it to your Makefile such as follows: 
 ```make
@@ -24,22 +24,17 @@ make docker_load
 make docker_orbital_cannon
 ```
 
-The Makefile also provides several practical targets that wrap the functionality of the docker-image-cacher.sh tool
-provided in this project.
-
 ## docker-image-cacher.sh
-The docker-image-cacher.sh is a utility script for caching docker images with 
-the goal of saving network resources.
+The docker-image-cacher.sh is a utility script for caching docker images with the goal of saving network resources.
 
-There are three major functions this script offers namely fetching, saving, loading, and printing.  All of these
+There are several major functions this script offers namely fetching, saving, loading, and printing.  All of these
 will be discussed in the coming sections.
 
 ### Printing
 you can call docker-image-cacher.sh with the -p or --print flag to perform a print operation.
 
-The print operation or action
-
-
+The print operation or action simply prints the docker image list that will be fetched and cached/saved with their respective
+operations.
 
 ### Fetching
 You can call docker-image-cacher.sh with the -f or --fetch flag to perform a fetch operation.
@@ -62,13 +57,14 @@ This will effectively update every image already loaded into docker on your host
 ### Saving
 Similar to fetching saving can be called in two ways.  The first way is to provide a search path
 ```bash
-bash docker-image-cacher.sh --docker-image-search-path "${HOME}" --save
+bash docker-image-cacher.sh --docker-image-search-path "<some path to search>" --save
 ```
 resulting in every discovered docker image will be saved into the default docker image cache directory as an archive 
 for each image. 
 
 Another way to call save is without a search path such as follows:
-```bash bash docker-image-cacher.sh --save
+```bash 
+bash docker-image-cacher.sh --save
 ```
 Every image in the docker registry will be saved to disk as a tar archive into
 the default docker image cache directory.
@@ -93,5 +89,31 @@ bash docker-image-cacher.sh --help
 
 ## Use Cases
 This section will give a few practical use cases for the docker-image-cacher.sh tool
+
+### Scrape your home directory for docker images, fetch them, and save them
+```bash
+bash docker-image-cacher.sh --fetch --save
+```
+Your home directory must have at least one Dockerfile somewhere in the directory tree.
+
+### Save all docker images in the local registry to the default cache location
+```bash
+bash docker-image-cacher.sh --save
+```
+
+### Load docker images from the default cache location into the local registry
+```bash
+bash docker-image-cacher.sh --load
+```
+
+### Fetch and save the docker image 'ubuntu:latest'
+```bash
+bash docker-image-cacher.sh --save --fetch -i 'ubuntu:latest'
+```
+
+### Fetch and save the docker image 'ubuntu:latest' and 'alpine:latest'
+```bash
+bash docker-image-cacher.sh --save --fetch -i 'ubuntu:latest alpine:latest'
+```
 
 
