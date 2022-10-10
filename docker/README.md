@@ -134,10 +134,18 @@ bash docker-image-cacher.sh --load
 ```bash
 bash docker-image-cacher.sh --save --fetch -i 'ubuntu:latest'
 ```
+and later 'ubuntu:latest' can be loaded from disk back into the local registry with:
+```bash 
+bash docker-image-cacher.sh --load 
+```
 
 ### Fetch and save the docker image 'ubuntu:latest' and 'alpine:latest'
 ```bash
 bash docker-image-cacher.sh --save --fetch -i 'ubuntu:latest alpine:latest'
+```
+and later both 'ubuntu:latest' and 'alpine:latest' can be loaded from disk back into the local registry with:
+```bash 
+bash docker-image-cacher.sh --load 
 ```
 
 
