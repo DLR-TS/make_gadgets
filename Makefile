@@ -1,5 +1,7 @@
-ROOT_DIR:=$(shell dirname "$(realpath $(firstword $(MAKEFILE_LIST)))")
+#ROOT_DIR=$(shell dirname "$(realpath $(firstword $(MAKEFILE_LIST)))")
 REPO_DIRECTORY?=""
+
+MAKEFILE_PATH:=$(shell dirname "$(abspath "$(lastword $(MAKEFILE_LIST)"))")
 
 
 .PHONY: help  
@@ -12,5 +14,6 @@ root_check:# Check if target was run as root
 
 .PHONY: get_sanitized_branch_name
 get_sanitized_branch_name: ## Returns a sanitized git branch name with no non-alphanumeric ASCII characters 
-	@bash tools/branch_name.sh --repo-directory "${REPO_DIRECTORY}"
+	@cd "${MAKEFILE_PATH}/tools" && bash "branch_name.sh" --repo-directory "${REPO_DIRECTORY}"
+
 

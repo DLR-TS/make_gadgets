@@ -37,7 +37,7 @@ if [[ -n "${REPO_DIR}" ]]; then
     cd "${REPO_DIR}"
 fi
 short_hash="$(git rev-parse --short HEAD)"
-branch="$(git branch --show-current | tr -d '[:space:]' | tr -s -c "[:alnum:][:blank:]" _ )"
+branch="$(git branch --show-current | tr -d '[:space:]' | tr -s -c "[:alnum:][:blank:]" _ | tr '[:upper:]' '[:lower:]')"
 
 
 if [[ -z "${branch}" ]]; then
