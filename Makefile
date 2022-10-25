@@ -1,7 +1,10 @@
-#ROOT_DIR=$(shell dirname "$(realpath $(firstword $(MAKEFILE_LIST)))")
-REPO_DIRECTORY?=""
+ROOT_DIR=$(shell dirname "$(realpath $(firstword $(MAKEFILE_LIST)))")
 
 MAKEFILE_PATH:=$(shell dirname "$(abspath "$(lastword $(MAKEFILE_LIST)"))")
+
+
+.EXPORT_ALL_VARIABLES:
+REPO_DIRECTORY?="${ROOT_DIR}"
 
 
 .PHONY: help  
@@ -13,7 +16,7 @@ root_check:# Check if target was run as root
 	@[ "$$EUID" -ne 0 ] || (echo "  ERROR: Do not run as root!"; 1>&2 && exit 1)
 
 .PHONY: get_sanitized_branch_name
-get_sanitized_branch_name: ## Returns a sanitized git branch name with no non-alphanumeric ASCII characters 
+get_sanitized_branch_name: ## Returns a sanitized git branch name with only alphanumeric ASCII characters. Set the 'REPO_DIRECTORY' env var before calling such as follows: 'make get_sanitized_branch_name REPO_DIRECTORY="<path to git repo>"'. 
 	@cd "${MAKEFILE_PATH}/tools" && bash "branch_name.sh" --repo-directory "${REPO_DIRECTORY}"
 
 

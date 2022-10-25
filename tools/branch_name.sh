@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 
-# Returns the sanitized git branch name or short hash if not on a branch. 
+# Returns the sanitized git branch name or short hash if not on a branch.
+# Sanitized git branch names can be used as docker tags for example.
+
+# The permitted characters and sequences in a git branch name is broader then
+# what is permitted in docker tags. The goal of this script is to be able to map
+# git branch names to docker tags.
+
+# For more information view the git and docker documentation:
+# https://docs.github.com/en/get-started/using-git/dealing-with-special-characters-in-branch-and-tag-names
+# https://docs.docker.com/engine/reference/commandline/tag
+
 
 set -euo pipefail
 
