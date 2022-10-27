@@ -1,15 +1,15 @@
 
 # To consume this module use:
-# include make_gadgets/docker/docker-tools.mk
+# include make_gadgets/docker/docker-tools
 
-ifndef docker-tools.mk_MAKEFILE_PATH
+ifndef docker-tools_MAKEFILE_PATH
 
 DOCKER_IMAGE_EXCLUSION_LIST?=""
 DOCKER_IMAGE_INCLUSION_LIST?=""
 
 #DEBUG=true
 .EXPORT_ALL_VARIABLES:
-docker-tools.mk_MAKEFILE_PATH=$(shell realpath "$(shell dirname "$(lastword $(MAKEFILE_LIST))")")
+docker-tools_MAKEFILE_PATH:=$(shell realpath "$(shell dirname "$(lastword $(MAKEFILE_LIST))")")
 
 .PHONY:docker_orbital_cannon
 docker_orbital_cannon: ## Deletes ALL docker images, volumes, build cache and containers.
