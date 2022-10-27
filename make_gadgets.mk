@@ -1,7 +1,5 @@
 
-ifndef make_gadgets.mk
-
-docker-tools.mk:=""
+ifndef make_gadgets.mk_MAKEFILE_PATH
 
 make_gadgets.mk_MAKEFILE_PATH:= $(shell dirname "$(abspath "$(lastword $(MAKEFILE_LIST))")")
 

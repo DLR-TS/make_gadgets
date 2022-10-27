@@ -1,13 +1,12 @@
 
 
-ifndef docker-image-cacher.mk
+ifndef docker-image-cacher.mk_MAKEFILE_PATH
 
-docker-image-cacher.mk:=""
-
-ROOT_DIR:=$(shell dirname "$(realpath $(firstword $(MAKEFILE_LIST)))")
 
 docker-image-cacher.mk_MAKEFILE_PATH:= $(shell dirname "$(abspath "$(lastword $(MAKEFILE_LIST))")")
 
+include ${docker-image-cacher.mk_MAKEFILE_PATH}/docker-tools.mk
+include ../${docker-image-cacher.mk_MAKEFILE_PATH}/make_gadgets.mk
 
 DOCKER_IMAGE_EXCLUSION_LIST?=""
 DOCKER_IMAGE_INCLUSION_LIST?=""
