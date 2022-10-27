@@ -1,6 +1,7 @@
 
-ifndef make_gadgets_MAKEFILE_PATH
+#ifndef make_gadgets_MAKEFILE_PATH
 
+#$(warning "make_gadgets.mk loaded")
 
 .EXPORT_ALL_VARIABLES:
 make_gadgets_MAKEFILE_PATH:=$(shell realpath "$(shell dirname "$(lastword $(MAKEFILE_LIST))")")
@@ -18,4 +19,4 @@ root_check: # Check if target was run as root
 get_sanitized_branch_name: ## Returns a sanitized git branch name with only alphanumeric and ASCII characters permitted as docker tags.
 	@cd "${make_gadgets_MAKEFILE_PATH}/tools" && bash "branch_name.sh" --repo-directory "${REPO_DIRECTORY}"
 
-endif
+#endif
