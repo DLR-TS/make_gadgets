@@ -1,14 +1,19 @@
 
+# To consume this module use:
+# include make_gadgets/docker/docker-tools.mk
+
+
+
 ROOT_DIR:=$(shell dirname "$(realpath $(firstword $(MAKEFILE_LIST)))")
-MAKEFILE_DIR := $(shell dirname "$(abspath "$(lastword $(MAKEFILE_LIST))")")
+
+docker-tools.mk_MAKEFILE_PATH:= $(shell dirname "$(abspath "$(lastword $(MAKEFILE_LIST))")")
+
 
 DOCKER_IMAGE_EXCLUSION_LIST?=""
 DOCKER_IMAGE_INCLUSION_LIST?=""
 
 #DEBUG=true
 .EXPORT_ALL_VARIABLES:
-DOCKER_IMAGE_SEARCH_PATH?="${HOME}"
-DOCKER_IMAGE_CACHE_DIRECTORY?="${MAKEFILE_DIR}/.docker_image_cache"
 
 .PHONY:docker_orbital_cannon
 docker_orbital_cannon: ## Deletes ALL docker images, volumes, build cache and containers.
@@ -47,5 +52,4 @@ docker_group_check:# Checks if the current user is a member of the 'docker' grou
          echo "    Run 'sudo usermod -a -G docker \$$USER' to add the current user to the docker group and try again."; 1>&2 \
          echo "    You may need to log out and log back in for changes to take effect." 1>&2 && exit 1 \
     )
-
 
