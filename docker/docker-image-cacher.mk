@@ -3,18 +3,17 @@
 ifndef docker-image-cacher.mk_MAKEFILE_PATH
 
 
-docker-image-cacher.mk_MAKEFILE_PATH:= $(shell dirname "$(abspath "$(lastword $(MAKEFILE_LIST))")")
-
-include ${docker-image-cacher.mk_MAKEFILE_PATH}/docker-tools.mk
 
 DOCKER_IMAGE_EXCLUSION_LIST?=""
 DOCKER_IMAGE_INCLUSION_LIST?=""
 
 #DEBUG=true
 .EXPORT_ALL_VARIABLES:
+docker-image-cacher.mk_MAKEFILE_PATH=$(shell realpath "$(shell dirname "$(lastword $(MAKEFILE_LIST))")")
 DOCKER_IMAGE_SEARCH_PATH?="${HOME}"
 DOCKER_IMAGE_CACHE_DIRECTORY?="${docker-image-cacher.mk_MAKEFILE_PATH}/.docker_image_cache"
 
+include ${docker-image-cacher.mk_MAKEFILE_PATH}/docker-tools.mk
 
 .PHONY: docker_fetch
 docker_fetch: docker_group_check## Fetches from docker.io all docker images provided by DOCKER_IMAGE_SEARCH_PATH or 'docker image ls' to a local cache.

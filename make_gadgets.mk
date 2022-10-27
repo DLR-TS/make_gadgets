@@ -1,9 +1,9 @@
 
 ifndef make_gadgets.mk_MAKEFILE_PATH
 
-make_gadgets.mk_MAKEFILE_PATH:= $(shell dirname "$(abspath "$(lastword $(MAKEFILE_LIST))")")
 
 .EXPORT_ALL_VARIABLES:
+make_gadgets.mk_MAKEFILE_PATH=$(shell realpath "$(shell dirname "$(lastword $(MAKEFILE_LIST))")")
 REPO_DIRECTORY?="${make_gadgets.mk_MAKEFILE_PATH}"
 
 .PHONY: help  
