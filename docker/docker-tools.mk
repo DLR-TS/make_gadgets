@@ -3,8 +3,7 @@
 # include make_gadgets/docker/docker-tools.mk
 
 
-
-ROOT_DIR:=$(shell dirname "$(realpath $(firstword $(MAKEFILE_LIST)))")
+ifndef docker-tools.mk_MAKEFILE_PATH
 
 docker-tools.mk_MAKEFILE_PATH:= $(shell dirname "$(abspath "$(lastword $(MAKEFILE_LIST))")")
 
@@ -53,3 +52,4 @@ docker_group_check:# Checks if the current user is a member of the 'docker' grou
          echo "    You may need to log out and log back in for changes to take effect." 1>&2 && exit 1 \
     )
 
+endif
