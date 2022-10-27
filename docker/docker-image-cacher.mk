@@ -5,10 +5,7 @@ ifndef docker-image-cacher.mk_MAKEFILE_PATH
 
 docker-image-cacher.mk_MAKEFILE_PATH:= $(shell dirname "$(abspath "$(lastword $(MAKEFILE_LIST))")")
 
-$(error "DD")
 include ${docker-image-cacher.mk_MAKEFILE_PATH}/docker-tools.mk
-$(error "DDD")
-include "${docker-image-cacher.mk_MAKEFILE_PATH}/../make_gadgets.mk"
 
 DOCKER_IMAGE_EXCLUSION_LIST?=""
 DOCKER_IMAGE_INCLUSION_LIST?=""
