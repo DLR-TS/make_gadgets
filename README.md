@@ -5,11 +5,11 @@ This is a collection of utility make targets that can be imported to any makefil
 
 Add the following import statement to the top of your Makefile:
 ```make
-include make_gadgets/Makefile
+include make_gadgets/make_gadgets.mk
 ```
 or
 ```make
-include make_gadgets/docker/Makefile
+include make_gadgets/docker/docker-tools.mk
 ```
 for the docker related gadgets/targets
 

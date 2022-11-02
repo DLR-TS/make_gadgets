@@ -9,12 +9,19 @@ This directory contains a Makefile that enhance vanilla docker with make.
 The Makefile also provides several practical targets that wrap the functionality of the docker-image-cacher.sh tool
 provided in this project.
 
-To consume this Makefile you can directly import it to your Makefile such as follows: 
+To consume the provided targets/recipes from the project you can directly import the desired module to your Makefile 
+such as follows: 
 ```make
-include make_gadgets/docker/Makefile
+include make_gadgets/docker/docker-tools.mk
 ```
 
-You can directly call the provided targets by calling make directly on this directory:
+To include the docker-image-cacher target/recipes add the following to the top of your Makefile:
+```bash
+include make_gadgets/docker/docker-image-cacher.mk
+```
+
+
+You can directly call the provided targets/recipes by calling make directly on this directory:
 ```bash
 cd make_gadgets/docker
 make docker_save
