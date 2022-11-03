@@ -49,4 +49,10 @@ docker_group_check:# Checks if the current user is a member of the 'docker' grou
          echo "    You may need to log out and log back in for changes to take effect." 1>&2 && exit 1 \
     )
 
+.PHONY: docker_context_check
+docker_context_check:# Checks if the current user is a member of the 'docker' group. 
+	@[ -f "/.dockerenv" ] || ( \
+         echo "  ERROR: Target/recipe must be run inside a docker context."; 1>&2 && exit 1 \
+    )
+
 endif
