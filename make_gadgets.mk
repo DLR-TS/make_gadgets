@@ -16,7 +16,7 @@ root_check: # Check if target was run as root
 	@[ "$$EUID" -ne 0 ] || (echo "  ERROR: Do not run as root!"; 1>&2 && exit 1)
 
 .PHONY: get_sanitized_branch_name
-get_sanitized_branch_name: ## Returns a sanitized git branch name with only alphanumeric and ASCII characters permitted as docker tags.
+get_sanitized_branch_name: ## Returns a sanitized git branch name with only alphanumeric and ASCII characters permitted as docker tags
 	@cd "${MAKE_GADGETS_MAKEFILE_PATH}/tools" && bash "branch_name.sh" --repo-directory "${REPO_DIRECTORY}"
 
 .PHONY: dump
