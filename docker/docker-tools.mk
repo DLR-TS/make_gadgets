@@ -51,9 +51,14 @@ docker_group_check:# Checks if the current user is a member of the 'docker' grou
     )
 
 .PHONY: docker_context_check
-docker_context_check:# Checks if the current user is a member of the 'docker' group. 
+docker_context_check:# Checks if the current context is inside docker, throws an error if it is not 
 	@[ -f "/.dockerenv" ] || ( \
          echo "  ERROR: Target/recipe must be run inside a docker context."; 1>&2 && exit 1 \
     )
 
+.PHONY: docker_host_context_check
+docker_host_context_check:# Checks if the current context is inside docker, throws an error if it is not 
+	@[ ! -f "/.dockerenv" ] || ( \
+         echo "  ERROR: Target/recipe must be run naively on host and not inside a docker context."; 1>&2 && exit 1 \
+    )
 endif
