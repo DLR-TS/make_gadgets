@@ -3,6 +3,8 @@
 
 #$(warning "make_gadgets.mk loaded")
 
+MAKEFLAGS += --no-print-directory
+
 .EXPORT_ALL_VARIABLES:
 MAKE_GADGETS_MAKEFILE_PATH:=$(shell realpath "$(shell dirname "$(lastword $(MAKEFILE_LIST))")")
 REPO_DIRECTORY?="${MAKE_GADGETS_MAKEFILE_PATH}"
