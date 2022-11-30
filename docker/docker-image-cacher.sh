@@ -3,7 +3,8 @@
 set -euo pipefail
 #set -euxo pipefail
 
-function echoerr { printf "$@" >&2; exit 1;}
+echoerr (){ printf "%s" "$@" >&2;}
+exiterr (){ echoerr "$@"; exit 1;}
 echodebug (){ 
     if [ ! -z "${DEBUG+x}" ] && [ "${DEBUG}" == true ]; then 
         printf "$@\n" >&2;
@@ -24,6 +25,8 @@ LOAD=false
 CONDITIONAL_LOAD=false
 FETCH=false
 PRINT=false
+
+WARN_ONLY=false
 
 help (){
  
@@ -103,6 +106,12 @@ help (){
 
     printf "           -c, --conditional-load                 Same as load however if there is already any docker \n"
     printf "                                                  images in the local registry then this is a NOOP. \n\n"
+ 
+    printf "           -w, --warn-only                        When saving docker images from the local repository \n"
+    printf "                                                  do not exit with an error if an image is not in the \n" 
+    printf "                                                  local repository. Default behavior is to exit with an \n"
+    printf "                                                  if the requested image to save is not in the local \n" 
+    printf "                                                  repository. \n\n" 
 
 }
 
@@ -140,6 +149,10 @@ while [[ $# -gt 0 ]]; do
       PRINT=true
       shift # past argument
       ;;
+    -w|--warn-only)
+      WARN_ONLY=true
+      shift # past argument
+      ;;
     -x|--docker-image-exclusion-list)
       DOCKER_IMAGE_EXCLUSION_LIST="$2"
       shift # past argument
@@ -167,11 +180,11 @@ done
 set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
 #if [[ -z "${DOCKER_IMAGE_SEARCH_PATH}" ]]; then
-#    echoerr "ERROR: No docker image search path provided. A docker image search path must be supplied with -s or --search-path flag."
+#    exiterr "ERROR: No docker image search path provided. A docker image search path must be supplied with -s or --search-path flag."
 #fi
 
 #if [[ ! -d "${DOCKER_IMAGE_SEARCH_PATH}" ]]; then
-#    echoerr "ERROR: The provided docker image search path: ${DOCKER_IMAGE_SEARCH_PATH} does not exist."
+#    exiterr "ERROR: The provided docker image search path: ${DOCKER_IMAGE_SEARCH_PATH} does not exist."
 #fi
 
 
@@ -194,7 +207,7 @@ find_docker_base_images(){
     fi
    
     if [ -z "${search_path+x}" -a ! -d "${search_path}" ]; then
-        echoerr "ERROR: The provided docker image search path: ${search_path} does not exist."
+        exiterr "ERROR: The provided docker image search path: ${search_path} does not exist."
     fi
 
     echodebug "    search_path: ${search_path}" 
@@ -232,7 +245,7 @@ fetch_docker_images(){
             local error_message="    ERROR: Unable to pull docker image: ${docker_image} from Docker central registry, try "
             error_message+="adding it to the exclusion list. \n" 
             error_message+="      Example: 'bash docker-image-cacher.sh ... -x \"${docker_image}\" ...' \n\n"
-            echoerr "${error_message}"
+            exiterr "${error_message}"
         }
     done
 }
@@ -245,7 +258,7 @@ save_docker_images(){
     echodebug "  FROM save_docker_images:"
 
     if [[ -z "${docker_image_cache_directory}" ]]; then
-        echoerr "ERROR: The docker image cache directory is not set."
+        exiterr "ERROR: The docker image cache directory is not set."
     fi
 
     docker_image_cache_directory="$(realpath "${docker_image_cache_directory}")" 
@@ -254,7 +267,7 @@ save_docker_images(){
     cd "${docker_image_cache_directory}"
 
      if [[ -z "${docker_images}" ]]; then
-         echoerr "ERROR: The docker image list is empty, there is nothing to save. Provide a search path with -d or inclusion list with -i\n"
+         exiterr "ERROR: The docker image list is empty, there is nothing to save. Provide a search path with -d or inclusion list with -i\n"
      fi
     for docker_image in $docker_images; do
         docker_image_archive="${docker_image_cache_directory}/$(echo "${docker_image//:/_}" | sed "s|/|_|g").tar"
@@ -262,11 +275,20 @@ save_docker_images(){
         { # try
             docker save --output "${docker_image_archive}" "${docker_image}"
         } || { # catch
-            local error_message="    ERROR: Unable to save docker image: ${docker_image} "
-            error_message+="it must exist in the local registry to save it.\n" 
-            error_message+="      Try 'docker pull ${docker_image}' and run this tool again. "
-            error_message+="You can also run this tool with the 'fetch' operation to pull this docker image. \n\n"
-            echoerr "${error_message}"
+            if [ "${WARN_ONLY}" == true ]; then
+                local warning_message="    WARNING: Unable to save docker image: ${docker_image} "
+                warning_message+="it must exist in the local registry to save it.\n" 
+                warning_message+="    Image will not be saved. \n" 
+                warning_message+="      Try 'docker pull ${docker_image}' and run this tool again. "
+                warning_message+="You can also run this tool with the 'fetch' operation to pull this docker image. \n\n"
+                echoerr "${warning_message}"
+            else
+                local error_message="    ERROR: Unable to save docker image: ${docker_image} "
+                error_message+="it must exist in the local registry to save it.\n" 
+                error_message+="      Try 'docker pull ${docker_image}' and run this tool again. "
+                error_message+="You can also run this tool with the 'fetch' operation to pull this docker image. \n\n"
+                exiterr "${error_message}"
+            fi
         }
         #docker save --output "${docker_image_archive}" "${docker_image}" 2>/dev/null || true
     done
@@ -325,6 +347,6 @@ fi
 
 if [ "${FETCH}" == false -a "${SAVE}" == false -a "${LOAD}" == false -a "${CONDITIONAL_LOAD}" == false -a "${PRINT}" == false ]; then
     help
-    echoerr "ERROR: Invalid or no arguments. You must provide an operation: save (-s, --save), load (-l, --load), fetch (-f, --fetch), or print (-p, --print). \n"
+    exiterr "ERROR: Invalid or no arguments. You must provide an operation: save (-s, --save), load (-l, --load), fetch (-f, --fetch), or print (-p, --print). \n"
 fi
 

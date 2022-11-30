@@ -30,6 +30,7 @@ docker_save: docker_group_check ## Saves all docker images provided by DOCKER_IM
                                 --docker-image-cache-directory ${DOCKER_IMAGE_CACHE_DIRECTORY} \
                                 --docker-image-exclusion-list ${DOCKER_IMAGE_EXCLUSION_LIST} \
                                 --docker-image-inclusion-list ${DOCKER_IMAGE_INCLUSION_LIST} \
+                                --warn-only \
                                 --save
 
 .PHONY: docker_save_local_registry_only
