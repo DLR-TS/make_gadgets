@@ -304,14 +304,17 @@ load_docker_images(){
         echo "  The provide docker image cache directory: ${docker_image_cache_directory} does not exist. Nothing to load skipping."
     else
         docker_image_cache_directory="$(realpath "${docker_image_cache_directory}")" 
-
-        docker_image_archives="$(ls "${docker_image_cache_directory}"/*.tar)"
-        echo "    loading saved docker images in cache directory: ${docker_image_cache_directory}"
-        for docker_image_archive in $docker_image_archives; do
-            docker_image_archive="$(realpath "${docker_image_archive}")"
-            echo "    loading docker image archive: $docker_image_archive"
-            docker load --input "${docker_image_archive}"
-        done
+        if [[ "$(find "${docker_image_cache_directory}" -mindepth 1 -type f -name "*.tar" -printf x | wc -c)" -gt 0 ]]; then
+            docker_image_archives="$(ls "${docker_image_cache_directory}"/*.tar)"
+            echo "    loading saved docker images in cache directory: ${docker_image_cache_directory}"
+            for docker_image_archive in $docker_image_archives; do
+                docker_image_archive="$(realpath "${docker_image_archive}")"
+                echo "    loading docker image archive: $docker_image_archive"
+                docker load --input "${docker_image_archive}"
+            done
+        else
+            echo "    No docker images located in: ${docker_image_cache_directory}, noting to load, skipping." 
+        fi
     fi
 }
 
