@@ -1,11 +1,11 @@
 
-#ifndef MAKE_GADGETS_MAKEFILE_PATH
+ifndef MAKE_GADGETS_MAKEFILE_PATH
 
 #$(warning "make_gadgets.mk loaded")
 
-MAKEFLAGS += --no-print-directory
 
 .EXPORT_ALL_VARIABLES:
+MAKEFLAGS += --no-print-directory
 MAKE_GADGETS_MAKEFILE_PATH:=$(shell realpath "$(shell dirname "$(lastword $(MAKEFILE_LIST))")")
 REPO_DIRECTORY?="${MAKE_GADGETS_MAKEFILE_PATH}"
 
@@ -28,4 +28,4 @@ dump: # Print all defined make variables
         $(info $(shell printf "%-20s" "$(v)")= $(value $(v))) \
     )
 
-#endif
+endif
