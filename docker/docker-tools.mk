@@ -2,7 +2,7 @@
 # To consume this module use:
 # include make_gadgets/docker/docker-tools
 
-ifndef DOCKER-TOOLS_MAKEFILE_PATH
+ifeq ($(filter docker-tools.mk, $(notdir $(MAKEFILE_LIST))), docker-tools.mk)
 
 DOCKER_IMAGE_EXCLUSION_LIST?=""
 DOCKER_IMAGE_INCLUSION_LIST?=""

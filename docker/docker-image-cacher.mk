@@ -1,8 +1,5 @@
 
-
-ifndef DOCKER-IMAGE-CACHER_MAKEFILE_PATH
-
-
+ifeq ($(filter docker-image-cacher.mk, $(notdir $(MAKEFILE_LIST))), docker-image-cacher.mk)
 
 DOCKER_IMAGE_EXCLUSION_LIST?=""
 DOCKER_IMAGE_INCLUSION_LIST?=""

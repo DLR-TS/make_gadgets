@@ -1,8 +1,5 @@
 
-ifndef MAKE_GADGETS_MAKEFILE_PATH
-
-#$(warning "make_gadgets.mk loaded")
-
+ifeq ($(filter make_gadgets.mk, $(notdir $(MAKEFILE_LIST))), make_gadgets.mk)
 
 .EXPORT_ALL_VARIABLES:
 MAKEFLAGS += --no-print-directory
