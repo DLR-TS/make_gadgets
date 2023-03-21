@@ -38,4 +38,3 @@ Usage: make <target>
 This project also contains a Makefile with targets useful for Docker.
 For more information check out the provided readme:[docker/README.md](docker/README.md)
 
-test
