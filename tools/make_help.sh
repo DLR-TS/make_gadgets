@@ -67,7 +67,7 @@ trim() {
 
 envsubst() {
     while read input; do
-        eval "echo \"${input}\""
+        eval "echo \"${input}\"" 2> /dev/null || true
         #echo "${input}"
     done
 }
