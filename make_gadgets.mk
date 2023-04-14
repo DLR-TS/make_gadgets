@@ -8,7 +8,7 @@ REPO_DIRECTORY?="${MAKE_GADGETS_MAKEFILE_PATH}"
 
 .PHONY: help  
 help:
-	@printf "Usage: make \033[36m<target>\033[0m\n%s\n" "$$(awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST) | sort | uniq)"
+	@bash ${MAKE_GADGETS_MAKEFILE_PATH}/tools/make_help.sh --makefiles "${MAKEFILE_LIST}"
 
 .PHONY: root_check
 root_check: # Check if target was run as root

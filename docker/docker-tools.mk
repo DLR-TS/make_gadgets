@@ -13,7 +13,7 @@ DOCKER-TOOLS_MAKEFILE_PATH:=$(shell realpath "$(shell dirname "$(lastword $(MAKE
 DOCKER_GID := $(shell getent group | grep docker | cut -d":" -f3)
 
 .PHONY:docker_orbital_cannon
-docker_orbital_cannon: ## Deletes ALL docker images, volumes, build cache and containers.
+docker_orbital_cannon: ## Deletes ALL docker images, volumes, build cache and containers. \\033[0;31m!DangerZone!\\033[0m
 	@echo -n "This is very destructive and will result in PERMANENT data loss, are you sure you want to proceed? [y/N] " && read ans && [ $${ans:-N} = y ];
 	docker stop $$(docker ps -aq) || true
 	docker rm --force $$(docker ps -aq) || true
@@ -25,7 +25,7 @@ docker_orbital_cannon: ## Deletes ALL docker images, volumes, build cache and co
 .PHONY: docker_clean
 docker_clean: docker_delete_dangling_images docker_delete_all_build_cache ## Clean/delete all docker dangling images and build cache
 
-.PHONY: docker_delete_all_continers
+.PHONY: docker_delete_all_containers
 docker_delete_all_containers: ## Stop and delete all docker containers
 	docker stop $$(docker ps -aq) || true
 	docker rm --force $$(docker ps -aq) || true
