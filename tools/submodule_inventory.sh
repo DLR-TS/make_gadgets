@@ -22,11 +22,10 @@ submodule_inventory(){
   xargs -I {} bash -c 'echo "{\"submodule\": \"{}\", \"url\": \"$(git config --file .gitmodules --get submodule.{}.url)\", \"branch\":\"$(git rev-parse --abbrev-ref HEAD)\",\"last_commit\": $(cd {} && git log -1 --pretty=format:"{\"hash\": \"%H\", \"author\": \"%an <%ae>\", \"date\": \"%ad\", \"message\": \"%s\", \"changes\":$(changed_files_json)}" --date=iso8601)},"' | \
   sed '$ s/,$//' 
   echo ']}')
-
   if [ -x "$(command -v ja)" ]; then
     printf "%s\n" "${output}" > "${output_file}"
   else
-    printf "%s'n" "${output}" | jq > "${output_file}"
+    printf "%s\n" "${output}" | jq > "${output_file}"
   fi
 }
 
