@@ -10,7 +10,9 @@ DOCKER_IMAGE_INCLUSION_LIST?=""
 #DEBUG=true
 .EXPORT_ALL_VARIABLES:
 DOCKER-TOOLS_MAKEFILE_PATH:=$(shell realpath "$(shell dirname "$(lastword $(MAKEFILE_LIST))")")
-DOCKER_GID := $(shell getent group | grep docker | cut -d":" -f3)
+DOCKER_GID := $(shell getent group | grep -w "docker" | cut -d":" -f3)
+
+$(error "${DOCKER_GID}")
 
 .PHONY:docker_orbital_cannon
 docker_orbital_cannon: ## Deletes ALL docker images, volumes, build cache and containers. \\033[0;31m!DangerZone!\\033[0m
