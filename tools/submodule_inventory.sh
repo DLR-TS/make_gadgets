@@ -20,8 +20,10 @@ submodule_inventory(){
   git config --file .gitmodules --get-regexp path | \
   awk '{ print $2 }' | \
   xargs -I {} bash -c 'echo "{\"submodule\": \"{}\", \"url\": \"$(git config --file .gitmodules --get submodule.{}.url)\", \"branch\":\"$(git rev-parse --abbrev-ref HEAD)\",\"last_commit\": $(cd {} && git log -1 --pretty=format:"{\"hash\": \"%H\", \"author\": \"%an <%ae>\", \"date\": \"%ad\", \"message\": \"%s\", \"changes\":$(changed_files_json)}" --date=iso8601)},"' | \
-  sed '$ s/,$//' 
+  sed '$ s/,$//'
   echo ']}')
+
+  output=$(echo "${output}" | sed 's|"last_commit": }|"last_commit": {}}|g')
   if [ -x "$(command -v ja)" ]; then
     printf "%s\n" "${output}" > "${output_file}"
   else
