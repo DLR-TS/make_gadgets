@@ -16,7 +16,10 @@ root_check: # Check if target was run as root
 
 .PHONY: get_sanitized_branch_name
 get_sanitized_branch_name: ## Returns a sanitized git branch name with only alphanumeric and ASCII characters permitted as docker tags
-	@cd "${MAKE_GADGETS_MAKEFILE_PATH}/tools" && bash "branch_name.sh" --repo-directory "${REPO_DIRECTORY}"
+	@REPO_DIRECTORY=$(PWD) && \
+    cd "${MAKE_GADGETS_MAKEFILE_PATH}/tools" && \
+    bash "branch_name.sh" --repo-directory "$$REPO_DIRECTORY"
+
 
 .PHONY: dump
 dump: # Print all defined make variables
