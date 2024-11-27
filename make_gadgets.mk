@@ -4,7 +4,6 @@ ifeq ($(filter make_gadgets.mk, $(notdir $(MAKEFILE_LIST))), make_gadgets.mk)
 .EXPORT_ALL_VARIABLES:
 MAKEFLAGS += --no-print-directory
 MAKE_GADGETS_MAKEFILE_PATH:=$(shell realpath "$(shell dirname "$(lastword $(MAKEFILE_LIST))")")
-REPO_DIRECTORY?="${MAKE_GADGETS_MAKEFILE_PATH}"
 
 .PHONY: help  
 help:
@@ -16,10 +15,7 @@ root_check: # Check if target was run as root
 
 .PHONY: get_sanitized_branch_name
 get_sanitized_branch_name: ## Returns a sanitized git branch name with only alphanumeric and ASCII characters permitted as docker tags
-	@REPO_DIRECTORY=$(PWD) && \
-    cd "${MAKE_GADGETS_MAKEFILE_PATH}/tools" && \
-    bash "branch_name.sh" --repo-directory "$$REPO_DIRECTORY"
-
+	@cd "${MAKE_GADGETS_MAKEFILE_PATH}/tools" && bash "branch_name.sh" --repo-directory "${PWD}"
 
 .PHONY: dump
 dump: # Print all defined make variables
