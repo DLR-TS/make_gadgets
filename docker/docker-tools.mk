@@ -14,7 +14,7 @@ DOCKER_GID := $(shell getent group | grep -w "docker" | cut -d":" -f3)
 
 
 .PHONY:docker_orbital_cannon
-docker_orbital_cannon: ## Deletes ALL docker images, volumes, build cache and containers. \\033[0;31m!DangerZone!\\033[0m
+docker_orbital_cannon: ## Deletes ALL docker images, volumes, build cache and containers. \033[0;31m!DangerZone!\033[0m
 	@echo -n "This is very destructive and will result in PERMANENT data loss, are you sure you want to proceed? [y/N] " && read ans && [ $${ans:-N} = y ];
 	docker stop $$(docker ps -aq) || true
 	docker rm --force $$(docker ps -aq) || true
